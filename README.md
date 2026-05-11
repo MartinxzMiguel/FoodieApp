@@ -1,97 +1,176 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# FoodieApp - Taller de Debug & Features
 
-# Getting Started
+Aplicación de pedidos de restaurante
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Nota Importante
+Esta aplicación contiene **bugs intencionales** y **features por implementar** como parte del taller práctico.
 
-## Step 1: Start Metro
+##  Tecnologías
+- React Native CLI 0.79.x
+- React Navigation (Stack + Bottom Tabs)
+- AsyncStorage
+- Firebase/Firestore
+- react-native-vector-icons
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+##  Configuración
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/[USUARIO]/FoodieApp.git
+cd FoodieApp
 
-```sh
-# Using npm
-npm start
+# 2. Instalar dependencias
+npm install
 
-# OR using Yarn
-yarn start
+# 3. Instalar pods (iOS)
+cd ios && pod install && cd ..
+
+# 4. Ejecutar
+npx react-native run-ios
+# o
+npx react-native run-android
 ```
 
-## Step 2: Build and run your app
+##  Estructura del Proyecto
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```
+src/
+├── config/firebase.js        # Configuración Firebase
+├── context/CartContext.js    # Estado global del carrito
+├── navigation/               # Stack y Tab navigators
+├── screens/                  # Pantallas de la app
+├── styles/globalStyles.js    # Estilos compartidos
+└── utils/seedData.js         # Datos del menú
 ```
 
-### iOS
+##  Descripcion de Features
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## F01: Barra de Búsqueda en Menú
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+**Conceptos involucrados:** `useState`, `TextInput`, `filter()`, `includes()`  
 
-```sh
-bundle install
-```
+### Descripción
 
-Then, and every time you update your native dependencies, run:
+Agregar un `TextInput` como barra de búsqueda encima de la `FlatList` del menú. El usuario escribe el nombre de un plato y la lista se filtra en tiempo real mostrando solo los platos que coincidan.
 
-```sh
-bundle exec pod install
-```
+### Criterios de Aceptación
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+- La búsqueda filtra la lista en tiempo real mientras el usuario escribe.
+- El filtro **no** es sensible a mayúsculas/minúsculas (usar `.toLowerCase()`).
+- Cuando no hay resultados, se muestra un mensaje indicándolo (ej: "No se encontraron platos").
+- El campo incluye un botón "✕" para limpiar el texto de búsqueda y restaurar la lista completa.
+- El placeholder del input indica su propósito (ej: "Buscar platos...").
 
-```sh
-# Using npm
-npm run ios
+## F02: Sistema de Favoritos
 
-# OR using Yarn
-yarn ios
-```
+**Conceptos involucrados:** `AsyncStorage`, `useState`, `useEffect`  
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Descripción
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+Agregar un botón de corazón (♡/♥) en `DishDetailScreen` para marcar o desmarcar platos como favoritos. Los IDs de los platos favoritos se guardan en `AsyncStorage`. En `ProfileScreen`, mostrar la lista de platos marcados como favoritos.
 
-## Step 3: Modify your app
+### Criterios de Aceptación
 
-Now that you have successfully run the app, let's make changes!
+- El botón de corazón alterna entre estado favorito (♥ relleno, color rojo) y no favorito (♡ vacío).
+- Al abrir el detalle de un plato, se verifica si ya está en favoritos y se muestra el estado correcto.
+- Los favoritos **persisten** al cerrar y reabrir la app (se guardan con `AsyncStorage`).
+- En `ProfileScreen` se muestra una sección "Mis Favoritos" con la lista de platos guardados.
+- Cada favorito en la lista tiene opción de eliminar (quitar de favoritos).
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## F03: Notas Especiales por Plato en el Carrito
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+**Conceptos involucrados:** `useState`, `TextInput`, actualización de estado en arrays  
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Descripción
 
-## Congratulations! :tada:
+Agregar un `TextInput` debajo de cada item en el carrito para que el usuario pueda escribir notas especiales (ej: "sin cebolla", "extra picante", "poco sal"). Las notas se asocian al item correspondiente y se envían con el pedido al confirmar.
 
-You've successfully run and modified your React Native App. :partying_face:
+### Criterios de Aceptación
 
-### Now what?
+- Cada item del carrito tiene su propio campo de notas independiente.
+- Las notas se guardan asociadas al item (ej: `item.notes = "sin cebolla"`).
+- Al confirmar el pedido, las notas se incluyen en el objeto enviado a Firestore.
+- El placeholder del campo indica su propósito (ej: "Notas especiales: sin cebolla, extra picante...").
+- El campo es opcional: dejar vacío no causa errores.
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## F04: Filtro Horizontal por Categoría
 
-# Troubleshooting
+**Conceptos involucrados:** `useState`, `ScrollView` horizontal, `filter()`  
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### Descripción
 
-# Learn More
+Agregar una fila horizontal de botones (chips) con las categorías del menú: Todas, Entradas, Sopas, Platos Fuertes, Postres, Bebidas. Al seleccionar una categoría, la lista se filtra mostrando solo los platos de esa categoría.
 
-To learn more about React Native, take a look at the following resources:
+### Criterios de Aceptación
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Los botones de categoría se muestran en un `ScrollView` horizontal con scroll habilitado.
+- La categoría activa se resalta visualmente (cambio de color de fondo y texto).
+- "Todas" muestra todos los platos sin filtrar.
+- El filtro se aplica instantáneamente al tocar una categoría.
+- Las categorías disponibles provienen del array `CATEGORIES` en `src/utils/seedData.js`.
+
+## F05: Toggle de Modo Oscuro
+
+**Conceptos involucrados:** `AsyncStorage`, `useState`, `useEffect`, `Switch`  
+
+### Descripción
+
+Agregar un componente `Switch` (toggle) en `ProfileScreen` para alternar entre modo claro y modo oscuro. La preferencia del usuario se persiste con `AsyncStorage`. Al activar el modo oscuro, los colores de `ProfileScreen` cambian a una paleta oscura.
+
+### Criterios de Aceptación
+
+- El `Switch` alterna entre modo claro (por defecto) y modo oscuro.
+- Al activar el modo oscuro, `ProfileScreen` usa fondos oscuros y textos claros.
+- La preferencia del modo se guarda en `AsyncStorage` y se restaura al reabrir la app.
+- Los colores oscuros son legibles y coherentes (no simplemente invertir colores).
+- El toggle muestra una etiqueta que indica el modo actual (ej: "Modo Oscuro" con el switch).
+
+## F06: Cálculo de Total con IVA (19%)
+
+**Conceptos involucrados:** `useState`, cálculos numéricos, formateo de moneda  
+
+### Descripción
+
+Mostrar en la sección inferior del carrito tres líneas: Subtotal, IVA (19%) y Total Final. Los valores deben calcularse automáticamente a partir de los items del carrito y actualizarse cuando se agregan o eliminan productos.
+
+### Criterios de Aceptación
+
+- Se muestra el **Subtotal** (suma de precios × cantidades).
+- Se muestra el **IVA** calculado como `subtotal × 0.19`.
+- Se muestra el **Total** calculado como `subtotal + iva`.
+- Todos los valores están formateados como moneda colombiana (`toLocaleString('es-CO')`).
+- Los valores se actualizan automáticamente al agregar/eliminar items del carrito.
+- El botón "Confirmar Pedido" muestra el total final (con IVA).
+
+## F07: Sistema de Calificación Post-Pedido
+
+**Conceptos involucrados:** `useState`, Firestore `update`, `TouchableOpacity`  
+
+### Descripción
+
+Agregar un componente de estrellas (1–5) en cada tarjeta de pedido del historial para que el usuario pueda calificar sus pedidos entregados. La calificación se guarda en el documento del pedido en Firestore (o en estado local si Firebase no está configurado).
+
+### Criterios de Aceptación
+
+- Solo los pedidos con status `"delivered"` pueden ser calificados.
+- Se muestran 5 estrellas interactivas (☆ vacías / ★ llenas).
+- Al tocar una estrella, se seleccionan todas las estrellas hasta esa posición.
+- La calificación se guarda en Firestore (`db.collection('orders').doc(id).update({ rating: n })`).
+- Si el pedido ya tiene calificación, se muestra al cargar y no se puede cambiar (o se permite editar una vez).
+
+## F08: Selector de Cantidad (+/−) en el Carrito
+
+**Conceptos involucrados:** `useState`, Context, lógica de incremento/decremento  
+
+### Descripción
+
+Agregar botones "+" y "−" junto a cada item en el carrito para ajustar la cantidad del plato. Si la cantidad llega a 0, el item se elimina automáticamente del carrito.
+
+### Criterios de Aceptación
+
+- Botón **+** incrementa la cantidad del item en 1.
+- Botón **−** decrementa la cantidad en 1 (mínimo 1, o elimina el item si llega a 0).
+- El subtotal del item individual se recalcula al cambiar la cantidad.
+- El total general del carrito se actualiza automáticamente.
+- Los botones tienen un diseño claro y son fáciles de tocar (tamaño mínimo 40×40).
+
