@@ -13,7 +13,7 @@ const MenuScreen = ({ navigation }) => {
 
   useEffect(() => {
     fetchMenu();
-  }); 
+  }, []); 
 
   const fetchMenu = async () => {
     try {
@@ -96,7 +96,7 @@ const MenuScreen = ({ navigation }) => {
       <FlatList
         data={filteredDishes}
         renderItem={renderDishItem}
-        keyExtractor={(item, index) => index.toString()} 
+        keyExtractor={(item) => item.id} 
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={

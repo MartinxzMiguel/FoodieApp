@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View,Text,TextInput,TouchableOpacity,Alert,StyleSheet} from 'react-native';
+import {View,Text,TextInput,TouchableOpacity,Alert,StyleSheet, ScrollView} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, globalStyles } from '../styles/globalStyles';
@@ -21,7 +21,7 @@ const ProfileScreen = () => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const profile = stored;  
+        const profile = JSON.parse(stored);  
         setUserName(profile.name || '');
         setUserEmail(profile.email || '');
         setUserPhone(profile.phone || '');

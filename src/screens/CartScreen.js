@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import {View,Text,FlatList,TouchableOpacity,Alert,StyleSheet} from 'react-native';
+import {View,Text,FlatList,TouchableOpacity,Alert,StyleSheet,ScrollView} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CartContext } from '../context/CartContext';
 import { db } from '../config/firebase';

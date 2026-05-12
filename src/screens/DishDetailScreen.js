@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Alert, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CartContext } from '../context/CartContext';
 import { COLORS, globalStyles } from '../styles/globalStyles';
 
 const DishDetailScreen = ({ route, navigation }) => {
   const { addToCart } = useContext(CartContext);
-  const { dish } = route.params; 
+  const dish = route.params; 
 
   const handleAddToCart = () => {
     addToCart({
@@ -60,7 +60,7 @@ const DishDetailScreen = ({ route, navigation }) => {
       <View style={styles.bottomBar}>
         <TouchableOpacity
           style={styles.addToCartButton}
-          onClick={handleAddToCart}
+          onPress={handleAddToCart}
         >
           <Text style={styles.addToCartText}>🛒 Agregar al Carrito</Text>
           <Text style={styles.addToCartPrice}>
