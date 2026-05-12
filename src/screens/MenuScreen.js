@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {View,Text,FlatList,TouchableOpacity,Image,ActivityIndicator,StyleSheet} from 'react-native';
+import {View,Text,FlatList,TouchableOpacity,Image,ActivityIndicator,StyleSheet, ScrollView} from 'react-native';
 import { CartContext } from '../context/CartContext';
 import { db } from '../config/firebase';
 import { LOCAL_MENU, CATEGORIES } from '../utils/seedData';
@@ -93,6 +93,36 @@ const MenuScreen = ({ navigation }) => {
           {filteredDishes.length} platos disponibles
         </Text>
       </View>
+
+      {/* Categorías */}
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.categoriesContainer}
+        >
+          {CATEGORIES.map((category) => (
+            <TouchableOpacity
+              key={category}
+              style={[
+                styles.categoryChip,
+                selectedCategory === category && styles.categoryChipActive,
+              ]}
+              onPress={() => setSelectedCategory(category)}
+            >
+              <Text
+                style={[
+                  styles.categoryChipText,
+                  selectedCategory === category && styles.categoryChipTextActive,
+                ]}
+              >
+                {category}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <FlatList
         data={filteredDishes}
         renderItem={renderDishItem}
@@ -174,6 +204,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: COLORS.textPrimary,
+  },
+
+  /* Estilos para la sección de categorías */
+  categoriesContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
+    height: 56,
+    alignItems: 'center',
+  },
+  categoryChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#F3F4F6',
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+  },
+  categoryChipActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  categoryChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+  },
+  categoryChipTextActive: {
+    color: '#FFFFFF',
   },
 });
 
