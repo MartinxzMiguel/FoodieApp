@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
-import {View,Text,FlatList,TouchableOpacity,Alert,StyleSheet,ScrollView} from 'react-native';
+import {View,Text,FlatList,TouchableOpacity,Alert,StyleSheet,TextInput} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CartContext } from '../context/CartContext';
 import { db } from '../config/firebase';
 import { COLORS, globalStyles } from '../styles/globalStyles';
 
 const CartScreen = ({ navigation }) => {
-  const { cartItems, removeFromCart, clearCart, getCartTotal } = useContext(CartContext);
+  const { cartItems, removeFromCart, clearCart, getCartTotal, updateItemNotes } = useContext(CartContext);
 
   const handleConfirmOrder = async () => {
     if (cartItems.length === 0) {
@@ -45,9 +45,13 @@ const CartScreen = ({ navigation }) => {
       ]
     );
   };
-
+  
+  // Se agrega un View para envolver el TextInput de notas especiales debajo de la info del plato, y se ajustan los estilos para acomodar el nuevo diseño
   const renderCartItem = ({ item }) => (
-    <View style={styles.cartItemCard}>
+  <View style={styles.cartItemCard}>
+
+    {/* Fila superior: info + acciones */}
+    <View style={styles.itemRow}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemPrice}>
@@ -66,6 +70,17 @@ const CartScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+
+    {/* Campo de notas especiales */}
+    <TextInput
+      style={styles.notesInput}
+      placeholder="Notas especiales: sin cebolla, extra picante..."
+      placeholderTextColor={COLORS.disabled}
+      value={item.notes || ''}
+      onChangeText={(text) => updateItemNotes(item.id, text)}
+      multiline
+    />
+  </View>
   );
 
   const subtotal = getCartTotal();
@@ -155,7 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 10,
-    flexDirection: 'row',
+    flexDirection: 'column', // Se cambia a column para acomodar el TextInput debajo de la info del plato
     justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
@@ -247,6 +262,27 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 17,
     fontWeight: '700',
+  },
+
+  // Estilos para el TextInput de notas especiales
+  notesInput: {
+  marginTop: 10,
+  borderWidth: 1,
+  borderColor: COLORS.border,
+  borderRadius: 8,
+  paddingHorizontal: 10,
+  paddingVertical: 8,
+  fontSize: 13,
+  color: COLORS.textPrimary,
+  backgroundColor: '#F9FAFB',
+  width: '100%',
+  },
+
+  // Se agrega un estilo para la fila que contiene la info del plato y las acciones, para acomodar el nuevo diseño con el TextInput debajo
+  itemRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   },
 });
 

@@ -78,6 +78,15 @@ export const CartProvider = ({ children }) => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
+  // Se agrega la función UpdateItemNotes para permitir al usuario agregar notas a los platos en el carrito
+  const updateItemNotes = (dishId, notes) => {
+    const updatedCart = cartItems.map(item =>
+      item.id === dishId ? { ...item, notes } : item
+    );
+    setCartItems(updatedCart);
+    saveCart(updatedCart);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -87,6 +96,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         clearCart,
         getCartTotal,
+        updateItemNotes,
       }}
     >
       {children}

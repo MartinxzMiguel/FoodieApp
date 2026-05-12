@@ -11,6 +11,11 @@ const OrderDetailScreen = ({ route }) => {
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemQty}>Cantidad: {item.quantity}</Text>
+        
+        {/* Se agrega para mostrar notas especiales */}
+        {item.notes ? (
+        <Text style={styles.itemNotes}>📝 {item.notes}</Text>
+        ) : null}
       </View>
       <Text style={styles.itemPrice}>
         ${(item.price * item.quantity).toLocaleString('es-CO')}
@@ -104,6 +109,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '800',
     color: COLORS.primary,
+  },
+
+  /* Estilo para las notas especiales */
+  itemNotes: {
+  fontSize: 12,
+  color: COLORS.textSecondary,
+  fontStyle: 'italic',
+  marginTop: 4,
   },
 });
 
