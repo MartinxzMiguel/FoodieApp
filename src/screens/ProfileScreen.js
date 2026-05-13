@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {View,Text,TextInput,TouchableOpacity,Alert,StyleSheet, ScrollView} from 'react-native';
+import {View,Text,TextInput,TouchableOpacity,Alert,StyleSheet, ScrollView, Switch} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, globalStyles } from '../styles/globalStyles';
@@ -12,10 +12,45 @@ const ProfileScreen = () => {
   const [userPhone, setUserPhone] = useState('');
   const [userAddress, setUserAddress] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     loadProfile();
   }, []);
+
+  // Cargar preferencia guardada
+  useEffect(() => {
+    loadDarkMode();
+  }, []);
+
+  const loadDarkMode = async () => {
+  try {
+    const stored = await AsyncStorage.getItem('@foodie_dark_mode');
+    if (stored !== null) {
+      setIsDarkMode(JSON.parse(stored));
+    }
+  } catch (error) {
+    console.error('Error loading dark mode:', error);
+  }
+  };
+
+  const toggleDarkMode = async (value) => {
+    setIsDarkMode(value);
+    try {
+      await AsyncStorage.setItem('@foodie_dark_mode', JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving dark mode:', error);
+    }
+  };
+
+  const theme = {
+    background: isDarkMode ? '#121212' : '#FFFFFF',
+    surface: isDarkMode ? '#1E1E1E' : COLORS.surface,
+    textPrimary: isDarkMode ? '#F9FAFB' : COLORS.textPrimary,
+    textSecondary: isDarkMode ? '#9CA3AF' : COLORS.textSecondary,
+    border: isDarkMode ? '#374151' : COLORS.border,
+    input: isDarkMode ? '#2D2D2D' : COLORS.surface,
+  };
 
   const loadProfile = async () => {
     try {
@@ -73,8 +108,8 @@ const ProfileScreen = () => {
   };
 
   return (
-    <SafeAreaView style={globalStyles.safeArea}>
-      <ScrollView style={globalStyles.container}>
+    <SafeAreaView style={[globalStyles.safeArea, { backgroundColor: theme.background }]}>
+      <ScrollView style={[globalStyles.container, { backgroundColor: theme.background }]}>
         <View style={styles.header}>
           <Text style={globalStyles.title}>Mi Perfil 👤</Text>
         </View>
@@ -86,17 +121,30 @@ const ProfileScreen = () => {
                 {userName ? userName.charAt(0).toUpperCase() : '?'}
               </Text>
             </View>
-            <Text style={styles.avatarName}>
+            <Text style={[styles.avatarName, { color: theme.textPrimary }]}>
               {userName || 'Sin nombre'}
             </Text>
           </View>
 
           <View style={globalStyles.divider} />
 
+          <View style={[styles.darkModeRow, { borderColor: theme.border }]}>
+            <Text style={[styles.darkModeLabel, { color: theme.textPrimary }]}>
+              {isDarkMode ? '🌙   Modo Oscuro' : '☀️  Modo Claro'}
+            </Text>
+            <Switch
+              trackColor={{ false: '#767577', true: COLORS.primary }}
+              thumbColor={isDarkMode ? '#FFFFFF' : '#F4F3F4'}
+              onValueChange={toggleDarkMode}
+              value={isDarkMode}
+            />
+          </View>
+
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Nombre completo</Text>
+            <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>Nombre completo</Text>
             <TextInput
-              style={[styles.fieldInput, !isEditing && styles.fieldDisabled]}
+              style={[styles.fieldInput, !isEditing && styles.fieldDisabled, 
+                { backgroundColor: theme.input, color: theme.textPrimary }]}
               value={userName}
               onChangeText={setUserName}
               placeholder="Tu nombre"
@@ -106,9 +154,10 @@ const ProfileScreen = () => {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Correo electrónico</Text>
+            <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>Correo electrónico</Text>
             <TextInput
-              style={[styles.fieldInput, !isEditing && styles.fieldDisabled]}
+              style={[styles.fieldInput, !isEditing && styles.fieldDisabled, 
+                { backgroundColor: theme.input, color: theme.textPrimary }]}
               value={userEmail}
               onChangeText={setUserEmail}
               placeholder="correo@ejemplo.com"
@@ -120,9 +169,10 @@ const ProfileScreen = () => {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Teléfono</Text>
+            <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>Teléfono</Text>
             <TextInput
-              style={[styles.fieldInput, !isEditing && styles.fieldDisabled]}
+              style={[styles.fieldInput, !isEditing && styles.fieldDisabled, 
+                { backgroundColor: theme.input, color: theme.textPrimary }]}
               value={userPhone}
               onChangeText={setUserPhone}
               placeholder="300 123 4567"
@@ -133,9 +183,10 @@ const ProfileScreen = () => {
           </View>
 
           <View style={styles.fieldGroup}>
-            <Text style={styles.fieldLabel}>Dirección de entrega</Text>
+            <Text style={[styles.fieldLabel, { color: theme.textSecondary }]}>Dirección de entrega</Text>
             <TextInput
-              style={[styles.fieldInput, styles.fieldMultiline, !isEditing && styles.fieldDisabled]}
+              style={[styles.fieldInput, styles.fieldMultiline, !isEditing && styles.fieldDisabled, 
+                { backgroundColor: theme.input, color: theme.textPrimary }]}
               value={userAddress}
               onChangeText={setUserAddress}
               placeholder="Calle, número, barrio, ciudad"
@@ -317,6 +368,19 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     fontFamily: 'monospace',
     marginBottom: 2,
+  },
+  // 👇 Agregar estos dos
+  darkModeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    marginBottom: 16,
+  },
+  darkModeLabel: {
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
