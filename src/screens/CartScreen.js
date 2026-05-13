@@ -17,7 +17,9 @@ const CartScreen = ({ navigation }) => {
     try {
         await db.collection('orders').add({
         items: cartItems,
-        total: getCartTotal(),
+        subtotal: subtotal,
+        iva: iva,
+        total: total,
         status: 'confirmed',
         createdAt: new Date().toISOString(),
       });
@@ -84,6 +86,8 @@ const CartScreen = ({ navigation }) => {
   );
 
   const subtotal = getCartTotal();
+  const iva = subtotal * 0.19; // Asumiendo un IVA del 19%
+  const total = subtotal + iva;
 
   return (
     <SafeAreaView style={globalStyles.safeArea}>
@@ -123,16 +127,26 @@ const CartScreen = ({ navigation }) => {
 
         {cartItems.length > 0 && (
           <View style={styles.bottomSection}>
+
+            {/* Se muestra el subtotal, IVA y total para mayor claridad al usuario */}
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Subtotal</Text>
               <Text style={styles.totalValue}>
                 ${subtotal.toLocaleString('es-CO')}
               </Text>
             </View>
+
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>IVA (19%)</Text>
+              <Text style={styles.totalValue}>
+                ${iva.toLocaleString('es-CO')}
+              </Text>
+            </View>
+
             <View style={[styles.totalRow, styles.grandTotal]}>
               <Text style={styles.grandTotalLabel}>Total</Text>
               <Text style={styles.grandTotalValue}>
-                ${subtotal.toLocaleString('es-CO')}
+                ${total.toLocaleString('es-CO')}
               </Text>
             </View>
             <TouchableOpacity
