@@ -104,6 +104,13 @@ const OrderHistoryScreen = ({ navigation }) => {
         </Text>
         <Text style={styles.viewDetail}>Ver detalle →</Text>
       </View>
+
+      <StarRating
+      orderId={item.id}
+      currentRating={item.rating}
+      status={item.status}
+    />
+
     </TouchableOpacity>
   );
 
@@ -115,6 +122,50 @@ const OrderHistoryScreen = ({ navigation }) => {
       </View>
     );
   }
+
+  const handleRating = async (orderId, rating) => {
+  try {
+    await db.collection('orders').doc(orderId).update({ rating });
+  } catch (error) {
+    console.log('Error saving rating:', error.message);
+  }
+  };
+
+  const StarRating = ({ orderId, currentRating, status }) => {
+    const [selected, setSelected] = useState(currentRating || 0);
+    const [saved, setSaved] = useState(!!currentRating);
+
+    // Solo pedidos entregados pueden calificarse
+    if (status !== 'delivered') return null;
+
+    const handlePress = (star) => {
+      if (saved) return; // No permitir cambiar si ya está guardado
+      setSelected(star);
+      setSaved(true);
+      handleRating(orderId, star);
+    };
+
+    return (
+      <View style={styles.starsContainer}>
+        <Text style={styles.rateLabel}>
+          {saved ? 'Tu calificación:' : 'Califica tu pedido:'}
+        </Text>
+        <View style={styles.stars}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <TouchableOpacity
+              key={star}
+              onPress={() => handlePress(star)}
+              disabled={saved}
+            >
+              <Text style={styles.star}>
+                {star <= selected ? '★' : '☆'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={globalStyles.safeArea}>
@@ -224,6 +275,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     fontWeight: '500',
+  },
+
+  starsContainer: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingTop: 10,
+    marginTop: 8,
+  },
+  rateLabel: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+    marginBottom: 6,
+    fontWeight: '600',
+  },
+  stars: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  star: {
+    fontSize: 24,
+    color: COLORS.star,
   },
 });
 
