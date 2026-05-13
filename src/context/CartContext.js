@@ -87,6 +87,24 @@ export const CartProvider = ({ children }) => {
     saveCart(updatedCart);
   };
 
+  const updateQuantity = (dishId, delta) => {
+    const item = cartItems.find(i => i.id === dishId);
+    if (!item) return;
+
+    if (item.quantity + delta <= 0) {
+      // Si llega a 0, eliminar el item
+      const updatedCart = cartItems.filter(i => i.id !== dishId);
+      setCartItems(updatedCart);
+      saveCart(updatedCart);
+    } else {
+      const updatedCart = cartItems.map(i =>
+        i.id === dishId ? { ...i, quantity: i.quantity + delta } : i
+      );
+      setCartItems(updatedCart);
+      saveCart(updatedCart);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -97,6 +115,7 @@ export const CartProvider = ({ children }) => {
         clearCart,
         getCartTotal,
         updateItemNotes,
+        updateQuantity,
       }}
     >
       {children}

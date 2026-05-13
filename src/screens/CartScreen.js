@@ -6,7 +6,7 @@ import { db } from '../config/firebase';
 import { COLORS, globalStyles } from '../styles/globalStyles';
 
 const CartScreen = ({ navigation }) => {
-  const { cartItems, removeFromCart, clearCart, getCartTotal, updateItemNotes } = useContext(CartContext);
+  const { cartItems, removeFromCart, clearCart, getCartTotal, updateItemNotes, updateQuantity } = useContext(CartContext);
 
   const handleConfirmOrder = async () => {
     if (cartItems.length === 0) {
@@ -73,6 +73,26 @@ const CartScreen = ({ navigation }) => {
       </View>
     </View>
 
+    <View style={styles.quantityRow}>
+      <View style={styles.quantityControls}>
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => updateQuantity(item.id, -1)}
+        >
+          <Text style={styles.quantityButtonText}>−</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.quantityText}>{item.quantity}</Text>
+
+        <TouchableOpacity
+          style={styles.quantityButton}
+          onPress={() => updateQuantity(item.id, +1)}
+        >
+          <Text style={styles.quantityButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+    
     {/* Campo de notas especiales */}
     <TextInput
       style={styles.notesInput}
@@ -297,6 +317,40 @@ const styles = StyleSheet.create({
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
+  },
+
+  quantityRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 18,
+    marginBottom: 10,
+  },
+  quantityControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  quantityButton: {
+    width: 60,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#555555',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+    minWidth: 24,
+    textAlign: 'center',
   },
 });
 
